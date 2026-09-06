@@ -1,0 +1,201 @@
+/* base */
+html {
+  scroll-behavior: smooth;
+}
+
+section[id] {
+  scroll-margin-top: 4rem;
+}
+
+::selection {
+  background: #C89B3C;
+  color: #211D1A;
+}
+
+/* visible keyboard focus everywhere */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #C89B3C;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* photo containers: try a real image first, fall back to a drawn pattern
+   so the page still looks intentional before real photos are dropped in */
+.photo-frame {
+  position: relative;
+  overflow: hidden;
+  background-color: #37485A;
+  background-image:
+    repeating-linear-gradient(135deg, rgba(255,255,255,0.06) 0px, rgba(255,255,255,0.06) 2px, transparent 2px, transparent 14px);
+}
+
+.photo-frame img {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.photo-frame .fallback-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  padding: 0.75rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.02em;
+  color: rgba(255,255,255,0.55);
+  pointer-events: none;
+}
+
+/* count-up numerals */
+.stat-number {
+  font-variant-numeric: tabular-nums;
+}
+
+/* lightbox */
+.lightbox-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(33, 29, 26, 0.92);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+/* simple line icon strokes */
+.icon-line {
+  stroke: currentColor;
+  stroke-width: 1.6;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* nav links: underline grows in from the left on hover/focus */
+.nav-link {
+  position: relative;
+}
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  height: 1px;
+  width: 0;
+  background: currentColor;
+  transition: width 0.25s ease;
+}
+.nav-link:hover::after,
+.nav-link:focus-visible::after {
+  width: 100%;
+}
+
+/* cards that lift slightly on hover */
+.lift-on-hover {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.lift-on-hover:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 34px -18px rgba(33, 29, 26, 0.35);
+}
+
+/* image (or illustration) inside a lift-on-hover card, gently zooms.
+   --flip lets ListingArt mirror itself via a CSS var instead of an inline
+   transform, so the flip and the hover-zoom can combine in one transform
+   instead of one silently overriding the other */
+.zoom-on-hover img,
+.zoom-on-hover svg {
+  transform: scaleX(var(--flip, 1));
+  transition: transform 0.5s ease;
+}
+.zoom-on-hover:hover img,
+.zoom-on-hover:hover svg {
+  transform: scaleX(var(--flip, 1)) scale(1.06);
+}
+
+/* ---------- "Find your next home" filters ---------- */
+
+/* a quiet focus glow instead of the browser default, on top of the
+   existing border-color transition already set via Tailwind classes */
+.filter-field {
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+.filter-field:focus {
+  box-shadow: 0 0 0 3px rgba(200, 155, 60, 0.16);
+}
+
+/* whenever a filter changes, the results block below is remounted (see
+   `resultsKey` in app.js) which replays this fade-and-rise so the list
+   change reads as a deliberate transition rather than a hard cut. cards
+   step in with a small stagger via the --i custom property set per card */
+@keyframes resultsIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.results-transition {
+  animation: resultsIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.results-transition > * {
+  animation: resultsIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(var(--i, 0) * 55ms);
+}
+
+/* ---------- modals (listing detail + gallery) ---------- */
+
+@keyframes scrimIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes panelIn {
+  from { opacity: 0; transform: translateY(14px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.lightbox-backdrop {
+  animation: scrimIn 0.28s ease both;
+}
+.modal-panel {
+  animation: panelIn 0.36s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ---------- photo gallery carousel ---------- */
+
+@keyframes frameIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.carousel-frame img {
+  animation: frameIn 0.4s ease both;
+}
+
+.carousel-arrow {
+  transition: background-color 0.25s ease, transform 0.15s ease, opacity 0.25s ease;
+}
+.carousel-arrow:hover {
+  background-color: rgba(255, 255, 255, 0.22);
+}
+.carousel-arrow:active {
+  transform: translateY(-50%) scale(0.94);
+}
+
+.carousel-dot {
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+.carousel-dot[aria-current="true"] {
+  transform: scale(1.3);
+}
